@@ -82,12 +82,12 @@ class MMSPluginConfig(object):
     if builder.options.plugin_name is not None:
       self.plugin_name = builder.options.plugin_name
     else:
-      self.plugin_name = 'serverlistplayersfix_mm'
+      self.plugin_name = 'sample_mm'
 
     if builder.options.plugin_alias is not None:
       self.plugin_alias = builder.options.plugin_alias
     else:
-      self.plugin_alias = 'serverlistplayersfix'
+      self.plugin_alias = 'sample'
 
     if builder.options.targets:
       target_archs = builder.options.targets.split(',')
@@ -150,6 +150,7 @@ class MMSPluginConfig(object):
         '-pipe',
         '-fno-strict-aliasing',
         '-Wall',
+        '-Wno-parentheses',
         '-Wno-uninitialized',
         '-Wno-unused',
         '-Wno-switch',
@@ -157,12 +158,13 @@ class MMSPluginConfig(object):
         '-fPIC',
       ]
 
-      cxx.cxxflags += ['-std=c++20']
+      cxx.cxxflags += ['-std=c++17']
       if (cxx.version >= 'gcc-4.0') or cxx.family == 'clang':
         cxx.cflags += ['-fvisibility=hidden']
         cxx.cxxflags += ['-fvisibility-inlines-hidden']
       cxx.cxxflags += [
         '-fno-exceptions',
+        '-fno-rtti',
         '-fno-threadsafe-statics',
         '-Wno-non-virtual-dtor',
         '-Wno-overloaded-virtual',
@@ -172,6 +174,14 @@ class MMSPluginConfig(object):
         cxx.cxxflags += ['-Wno-delete-non-virtual-dtor']
       if cxx.family == 'gcc':
         cxx.cflags += ['-mfpmath=sse']
+        # Debian 13 / GCC 13+ specific flags
+        if cxx.version >= 'gcc-11.0':
+          cxx.cxxflags += [
+            '-Wno-stringop-overflow',
+            '-Wno-array-bounds',
+            '-Wno-deprecated-declarations',
+            '-Wno-restrict'
+          ]
       if cxx.family == 'clang':
         cxx.cxxflags += ['-Wno-implicit-exception-spec-mismatch']
         if cxx.version >= 'clang-3.9':
@@ -182,7 +192,7 @@ class MMSPluginConfig(object):
           cxx.cxxflags += ['-Wno-deprecated-register']
         else:
           cxx.cxxflags += ['-Wno-deprecated']
-
+      
       # Work around SDK warnings.
       if cxx.version >= 'clang-10.0':
         cxx.cflags += [
@@ -204,10 +214,10 @@ class MMSPluginConfig(object):
       cxx.cflags += [
         '/W3',
         '/Zi',
-        '/std:c++20',
+        '/std:c++17',
       ]
       cxx.cxxflags += ['/TP']
-
+      
       cxx.linkflags += [
         '/SUBSYSTEM:WINDOWS',
         'kernel32.lib',
@@ -268,7 +278,7 @@ class MMSPluginConfig(object):
   def Library(self, cxx, name):
     binary = cxx.Library(name)
     return binary
-
+  
   def HL2Library(self, context, compiler, name, sdk):
     binary = self.Library(compiler, name)
     mms_core_path = os.path.join(self.mms_root, 'core')
@@ -276,7 +286,7 @@ class MMSPluginConfig(object):
 
     cxx.cxxincludes += [
       os.path.join(context.currentSourcePath),
-      os.path.join(mms_core_path),
+      os.path.join(mms_core_path),	
       os.path.join(mms_core_path, 'sourcehook'),
     ]
 

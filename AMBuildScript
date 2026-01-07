@@ -164,7 +164,6 @@ class MMSPluginConfig(object):
         cxx.cxxflags += ['-fvisibility-inlines-hidden']
       cxx.cxxflags += [
         '-fno-exceptions',
-        '-fno-rtti',
         '-fno-threadsafe-statics',
         '-Wno-non-virtual-dtor',
         '-Wno-overloaded-virtual',

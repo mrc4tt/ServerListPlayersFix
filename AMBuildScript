@@ -82,7 +82,7 @@ class MMSPluginConfig(object):
     if builder.options.plugin_name is not None:
       self.plugin_name = builder.options.plugin_name
     else:
-      self.plugin_name = 'sample_mm'
+      self.plugin_name = 'serverlistplayersfix'
 
     if builder.options.plugin_alias is not None:
       self.plugin_alias = builder.options.plugin_alias

@@ -171,7 +171,7 @@ const char *ServerListPlayersFix::GetLicense()
 
 const char *ServerListPlayersFix::GetVersion()
 {
-	return "1.0.7";
+	return "1.0.8";
 }
 
 const char *ServerListPlayersFix::GetDate()
@@ -186,7 +186,7 @@ const char *ServerListPlayersFix::GetLogTag()
 
 const char *ServerListPlayersFix::GetAuthor()
 {
-	return "Poggu";
+	return "Poggu (Forked by Miksen)";
 }
 
 const char *ServerListPlayersFix::GetDescription()

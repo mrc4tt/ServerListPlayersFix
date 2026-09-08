@@ -23,14 +23,13 @@
 #include <steam/steam_gameserver.h>
 #include "utils/module.h"
 #include "schemasystem/schemasystem.h"
-#include <funchook.h>
 #include "cs2_sdk/entity/cbaseplayercontroller.h"
 
 class GameSessionConfiguration_t { };
 
-SH_DECL_HOOK3_void(IServerGameDLL, GameFrame, SH_NOATTRIB, 0, bool, bool, bool);
-SH_DECL_HOOK0_void(IServerGameDLL, GameServerSteamAPIActivated, SH_NOATTRIB, 0);
-SH_DECL_HOOK0_void(IServerGameDLL, GameServerSteamAPIDeactivated, SH_NOATTRIB, 0);
+KHook::Virtual<IServerGameDLL, void, bool, bool, bool> gameFrameHook(&IServerGameDLL::GameFrame, &g_ServerListPlayersFix, nullptr, &ServerListPlayersFix::Hook_GameFrame);
+KHook::Virtual<IServerGameDLL, void> gameServerSteamAPIActivatedHook(&IServerGameDLL::GameServerSteamAPIActivated, &g_ServerListPlayersFix, &ServerListPlayersFix::Hook_GameServerSteamAPIActivated, nullptr);
+KHook::Virtual<IServerGameDLL, void> gameServerSteamAPIDeactivatedHook(&IServerGameDLL::GameServerSteamAPIDeactivated, &g_ServerListPlayersFix, &ServerListPlayersFix::Hook_GameServerSteamAPIDeactivated, nullptr);
 
 #ifdef _WIN32
 #define ROOTBIN "/bin/win64/"
@@ -76,9 +75,9 @@ bool ServerListPlayersFix::Load(PluginId id, ISmmAPI *ismm, char *error, size_t 
 
 	g_SMAPI->AddListener( this, this );
 
-	SH_ADD_HOOK(IServerGameDLL, GameFrame, server, SH_MEMBER(this, &ServerListPlayersFix::Hook_GameFrame), true);
-	SH_ADD_HOOK(IServerGameDLL, GameServerSteamAPIActivated, g_pSource2Server, SH_MEMBER(this, &ServerListPlayersFix::Hook_GameServerSteamAPIActivated), false);
-	SH_ADD_HOOK(IServerGameDLL, GameServerSteamAPIDeactivated, g_pSource2Server, SH_MEMBER(this, &ServerListPlayersFix::Hook_GameServerSteamAPIDeactivated), false);
+	gameFrameHook.Add(server);
+	gameServerSteamAPIActivatedHook.Add(g_pSource2Server);
+	gameServerSteamAPIDeactivatedHook.Add(g_pSource2Server);
 
 	g_pCVar = icvar;
 	ConVar_Register( FCVAR_RELEASE | FCVAR_CLIENT_CAN_EXECUTE | FCVAR_GAMEDLL );
@@ -88,9 +87,9 @@ bool ServerListPlayersFix::Load(PluginId id, ISmmAPI *ismm, char *error, size_t 
 
 bool ServerListPlayersFix::Unload(char *error, size_t maxlen)
 {
-	SH_REMOVE_HOOK(IServerGameDLL, GameFrame, server, SH_MEMBER(this, &ServerListPlayersFix::Hook_GameFrame), true);
-	SH_REMOVE_HOOK(IServerGameDLL, GameServerSteamAPIActivated, g_pSource2Server, SH_MEMBER(this, &ServerListPlayersFix::Hook_GameServerSteamAPIActivated), false);
-	SH_REMOVE_HOOK(IServerGameDLL, GameServerSteamAPIDeactivated, g_pSource2Server, SH_MEMBER(this, &ServerListPlayersFix::Hook_GameServerSteamAPIDeactivated), false);
+	gameFrameHook.Remove(server);
+	gameServerSteamAPIActivatedHook.Remove(g_pSource2Server);
+	gameServerSteamAPIDeactivatedHook.Remove(g_pSource2Server);
 
 	return true;
 }
@@ -115,7 +114,7 @@ void ServerListPlayersFix::UpdatePlayers()
 	}
 }
 
-void ServerListPlayersFix::Hook_GameFrame(bool simulating, bool bFirstTick, bool bLastTick)
+KHook::Return<void> ServerListPlayersFix::Hook_GameFrame(IServerGameDLL* pThis, bool simulating, bool bFirstTick, bool bLastTick)
 {
 	static double g_flNextUpdate = 0.0;
 
@@ -126,19 +125,24 @@ void ServerListPlayersFix::Hook_GameFrame(bool simulating, bool bFirstTick, bool
 		
 		g_flNextUpdate = curtime + 5.0;
 	}
+
+	return {KHook::Action::Ignore};
 }
 
 void ServerListPlayersFix::AllPluginsLoaded()
 {
 }
 
-void ServerListPlayersFix::Hook_GameServerSteamAPIActivated()
+KHook::Return<void> ServerListPlayersFix::Hook_GameServerSteamAPIActivated(IServerGameDLL* pThis)
 {
 	g_steamAPI.Init();
+
+	return {KHook::Action::Ignore};
 }
 
-void ServerListPlayersFix::Hook_GameServerSteamAPIDeactivated()
+KHook::Return<void> ServerListPlayersFix::Hook_GameServerSteamAPIDeactivated(IServerGameDLL* pThis)
 {
+	return {KHook::Action::Ignore};
 }
 
 void ServerListPlayersFix::OnLevelInit(char const* pMapName,
@@ -171,7 +175,7 @@ const char *ServerListPlayersFix::GetLicense()
 
 const char *ServerListPlayersFix::GetVersion()
 {
-	return "1.0.8";
+	return "2.0";
 }
 
 const char *ServerListPlayersFix::GetDate()

@@ -22,7 +22,7 @@
 
 #include <ISmmPlugin.h>
 #include <igameevents.h>
-#include <sh_vector.h>
+#include "khook.hpp"
 #include "iserver.h"
 
 class ServerListPlayersFix : public ISmmPlugin, public IMetamodListener
@@ -34,10 +34,6 @@ public:
 	bool Pause(char *error, size_t maxlen);
 	bool Unpause(char *error, size_t maxlen);
 	void AllPluginsLoaded();
-	void Hook_GameServerSteamAPIActivated();
-	void Hook_GameServerSteamAPIDeactivated();
-	void Hook_StartupServer(const GameSessionConfiguration_t& config, ISource2WorldSession*, const char*);
-public: //hooks
 	void OnLevelInit( char const *pMapName,
 				 char const *pMapEntities,
 				 char const *pOldLevel,
@@ -45,7 +41,10 @@ public: //hooks
 				 bool loadGame,
 				 bool background );
 	void OnLevelShutdown();
-	void Hook_GameFrame( bool simulating, bool bFirstTick, bool bLastTick );
+public: //hooks
+	KHook::Return<void> Hook_GameServerSteamAPIActivated(IServerGameDLL* pThis);
+	KHook::Return<void> Hook_GameServerSteamAPIDeactivated(IServerGameDLL* pThis);
+	KHook::Return<void> Hook_GameFrame(IServerGameDLL* pThis, bool simulating, bool bFirstTick, bool bLastTick);
 public:
 	const char *GetAuthor();
 	const char *GetName();

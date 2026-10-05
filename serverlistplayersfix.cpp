@@ -102,14 +102,24 @@ void ServerListPlayersFix::UpdatePlayers()
 	if(!gpGlobals || !g_pEntitySystem)
 		return;
 
+	// Null until GameServerSteamAPIActivated has run (e.g. plugin loaded late, or Steam logon not done yet).
+	ISteamGameServer *steamGameServer = g_steamAPI.SteamGameServer();
+	if (!steamGameServer)
+		return;
+
 	for (int i = 0; i < gpGlobals->maxClients; i++)
 	{
 		auto steamId = engine->GetClientSteamID(CPlayerSlot(i));
 		if (steamId)
 		{
-			auto controller = (CBasePlayerController*)g_pEntitySystem->GetEntityInstance(CEntityIndex(i+1));
-			if(controller)
-				g_steamAPI.SteamGameServer()->BUpdateUserData(*steamId, controller->GetPlayerName(), gameclients->GetPlayerScore(CPlayerSlot(i)));
+			// Entity i+1 is normally the slot's player controller, but verify before reading schema fields
+			// through a CBasePlayerController cast.
+			CEntityInstance *entity = g_pEntitySystem->GetEntityInstance(CEntityIndex(i+1));
+			if (!entity || !entity->m_pEntity || V_strcmp(entity->m_pEntity->GetClassname(), "cs_player_controller") != 0)
+				continue;
+
+			auto controller = (CBasePlayerController*)entity;
+			steamGameServer->BUpdateUserData(*steamId, controller->GetPlayerName(), gameclients->GetPlayerScore(CPlayerSlot(i)));
 		}
 	}
 }

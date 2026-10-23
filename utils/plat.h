@@ -19,6 +19,9 @@
 
 #pragma once
 #include <cstdint>
+// Before metamod_oslink.h: it #defines snprintf on Windows, and the UCRT <stdio.h>
+// refuses to be included after that (C1189).
+#include <cstdio>
 #include "metamod_oslink.h"
 
 struct Module

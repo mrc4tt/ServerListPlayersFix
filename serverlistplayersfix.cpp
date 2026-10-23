@@ -19,7 +19,6 @@
 
 #include <stdio.h>
 #include "serverlistplayersfix.h"
-#include <iserver.h>
 #include <steam/steam_gameserver.h>
 #include "utils/module.h"
 #include "schemasystem/schemasystem.h"
@@ -42,22 +41,10 @@ KHook::Virtual<IServerGameDLL, void> gameServerSteamAPIDeactivatedHook(&IServerG
 
 ServerListPlayersFix g_ServerListPlayersFix;
 ICvar *icvar = NULL;
-CSteamGameServerAPIContext g_steamAPI;
 IServerGameDLL* server = NULL;
 IVEngineServer* engine = NULL;
 IServerGameClients* gameclients = NULL;
 CGameEntitySystem* g_pEntitySystem = nullptr;
-
-CGameEntitySystem* GameEntitySystem()
-{
-#ifdef WIN32
-	static int offset = 88;
-#else
-	static int offset = 80;
-#endif
-	return *reinterpret_cast<CGameEntitySystem**>((uintptr_t)(g_pGameResourceServiceServer)+offset);
-}
-
 
 PLUGIN_EXPOSE(ServerListPlayersFix, g_ServerListPlayersFix);
 bool ServerListPlayersFix::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool late)
@@ -102,8 +89,8 @@ void ServerListPlayersFix::UpdatePlayers()
 	if(!gpGlobals || !g_pEntitySystem)
 		return;
 
-	// Null until GameServerSteamAPIActivated has run (e.g. plugin loaded late, or Steam logon not done yet).
-	ISteamGameServer *steamGameServer = g_steamAPI.SteamGameServer();
+	// Null until the game server Steam API is up (e.g. plugin loaded late, or Steam logon not done yet).
+	ISteamGameServer *steamGameServer = SteamGameServer();
 	if (!steamGameServer)
 		return;
 
@@ -145,8 +132,6 @@ void ServerListPlayersFix::AllPluginsLoaded()
 
 KHook::Return<void> ServerListPlayersFix::Hook_GameServerSteamAPIActivated(IServerGameDLL* pThis)
 {
-	g_steamAPI.Init();
-
 	return {KHook::Action::Ignore};
 }
 

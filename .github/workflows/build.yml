@@ -49,7 +49,7 @@ jobs:
       - name: Checkout Metamod
         uses: actions/checkout@v7
         with:
-          repository: alliedmodders/metamod-source
+          repository: mrc4tt/metamod-source
           ref: master
           path: mmsource-2.0
           submodules: recursive
@@ -57,7 +57,7 @@ jobs:
       - name: Checkout HL2SDK
         uses: actions/checkout@v7
         with:
-          repository: alliedmodders/s2sdk
+          repository: mrc4tt/hl2sdk
           ref: cs2
           path: hl2sdk-cs2
 

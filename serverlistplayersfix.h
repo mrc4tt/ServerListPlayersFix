@@ -23,7 +23,9 @@
 #include <ISmmPlugin.h>
 #include <igameevents.h>
 #include "khook.hpp"
-#include "iserver.h"
+#include "engine2/isource2server.h"
+#include "engine2/ivengineserver2.h"
+#include "engine2/inetworkserverservice.h"
 
 class ServerListPlayersFix : public ISmmPlugin, public IMetamodListener
 {

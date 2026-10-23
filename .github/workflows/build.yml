@@ -1,8 +1,8 @@
 name: CI
 
 # Releases are built and published locally (cs2-build-system/build-all.sh --release);
-# this workflow only runs on demand or for pull requests.
-on: [workflow_dispatch, pull_request]
+# this workflow only runs when started by hand (Actions -> Run workflow).
+on: workflow_dispatch
 
 jobs:
   version:

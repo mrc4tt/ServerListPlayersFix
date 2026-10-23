@@ -1,6 +1,8 @@
 name: CI
 
-on: [push, pull_request]
+# Releases are built and published locally (cs2-build-system/build-all.sh --release);
+# this workflow only runs on demand or for pull requests.
+on: [workflow_dispatch, pull_request]
 
 jobs:
   version:
@@ -88,7 +90,7 @@ jobs:
 
   release:
     name: Release
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
+    if: github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
     needs: [version, build]
     runs-on: ubuntu-latest
     permissions:

@@ -1,6 +1,18 @@
 # ServerListPlayersFix
 Populates the user information inside the steam api, as a result this fixes the players not showing up in the server browser.
 
+## Support
+
+Need help, found a bug, or have a feature idea? Join the Discord support server:
+
+[![Discord](https://img.shields.io/badge/Discord-Join%20the%20server-5865F2?logo=discord&logoColor=white)](https://discord.gg/zuQN3U2ZEh)
+
+- **Questions and setup help:** ask in the support channels on Discord.
+- **Bug reports:** open a [GitHub issue](https://github.com/mrc4tt/ServerListPlayersFix/issues) with your server log, plugin version and steps to reproduce. Discord is fine for a quick check first.
+- **Feature requests:** post them on Discord or open an [issue](https://github.com/mrc4tt/ServerListPlayersFix/issues).
+
+Please do not send support requests by direct message. Asking in the public channels means others can help and find the answer later.
+
 ## Manual building example
 
 ### Prerequisites

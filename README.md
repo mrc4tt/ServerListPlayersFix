@@ -1,6 +1,24 @@
 # ServerListPlayersFix
 Populates the user information inside the steam api, as a result this fixes the players not showing up in the server browser.
 
+## Installation
+
+1. Install [Metamod:Source](https://www.metamodsource.net/downloads.php?branch=dev) 2.0
+2. Download the package for your server from the [latest release](https://github.com/mrc4tt/ServerListPlayersFix/releases/latest) (see [Which download?](#which-download) below)
+3. Extract the archive into your server's `game/csgo` directory (it contains `addons/`)
+
+### Which download?
+
+Every [release](https://github.com/mrc4tt/ServerListPlayersFix/releases/latest) has three packages:
+
+| Package | For |
+| --- | --- |
+| `ServerListPlayersFix-<version>-steamrt3.tar.gz` | Linux servers. The CS2 dedicated server runs in Steam Runtime 3 ("sniper"); this build loads there, in Steam Runtime 4 and on any newer distribution. **Take this one if unsure.** |
+| `ServerListPlayersFix-<version>-steamrt4.tar.gz` | Linux servers that run in Steam Runtime 4. |
+| `ServerListPlayersFix-<version>-windows.zip` | Windows servers. |
+
+The top of each release lists the exact glibc and libstdc++ every Linux build needs and the distributions it loads on. A build that is too new for the server fails at load time with `version 'GLIBC_2.xx' not found` in the console.
+
 ## Support
 
 Need help, found a bug, or have a feature idea? Join the Discord support server:
@@ -45,7 +63,6 @@ Please do not send support requests by direct message. Asking in the public chan
  * There are also additional arguments for the configuration step that aren't covered here, you can see them by running ``python3 ../configure -h`` from within the ``\build`` folder.
  * To add additional linking ``.libs``/defines/include directories, open ``AMBuildScript`` and at the top edit corresponding arrays.
  * Sometimes there could be problems with ``ambuild`` not catching up the changes in ``.h`` files, thus producing incorrect (outdated) binaries or even doesn't compile with the new changes. As there's [no full rebuild option](https://github.com/alliedmodders/ambuild/issues/145) to combat this, go to the ``/build`` folder and locate the folder named after the plugin name you've used, deleting that folder and building after should provide the clean build of the project and the described issues should be eliminated.
-
 
 ## For more information on compiling and reading the plugin's source code, see:
 

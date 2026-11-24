@@ -170,7 +170,7 @@ const char *ServerListPlayersFix::GetLicense()
 
 const char *ServerListPlayersFix::GetVersion()
 {
-	return "2.1";
+	return "2.2";
 }
 
 const char *ServerListPlayersFix::GetDate()
